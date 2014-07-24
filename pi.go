@@ -6,7 +6,7 @@ import (
 	"bytes"
 )
 
-// Pi represents.
+// Pi represents the core of the API toolkit.
 type Pi struct {
 	router *pat.Router
 	routes []*route
@@ -26,7 +26,8 @@ func (p *Pi) Route(routeURL string, childRoutes ...*route) *route {
 	return route
 }
 
-// ListenAndServe .
+// ListenAndServe listens on the TCP network address srv.Addr and then calls
+// Serve to handle requests on incoming connections. If srv.Addr is blank, ":http" is used.
 func (p *Pi) ListenAndServe(addr string) error {
 	for _, route := range p.routes {
 		p.constructPath(route)
