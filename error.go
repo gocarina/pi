@@ -8,5 +8,5 @@ type HTTPError struct {
 }
 
 func (h HTTPError) Error() string {
-	return "error " + strconv.FormatInt(h.StatusCode, 10)
+	return "error: " + strconv.FormatInt(h.StatusCode, 10)
 }

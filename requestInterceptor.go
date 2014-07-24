@@ -7,60 +7,60 @@ const (
 	constOnError
 )
 
-type requestInterceptor struct {
+type interceptor struct {
 	Type    int
 	Handler HandlerFunction
 }
 
-type requestInterceptors []*requestInterceptor
+type interceptors []*interceptor
 
-func newBefore(handler HandlerFunction) *requestInterceptor {
-	return &requestInterceptor{
+func newBefore(handler HandlerFunction) *interceptor {
+	return &interceptor{
 		Type:    constBefore,
 		Handler: handler,
 	}
 }
 
-func newAfter(handler HandlerFunction) *requestInterceptor {
-	return &requestInterceptor{
+func newAfter(handler HandlerFunction) *interceptor {
+	return &interceptor{
 		Type:    constAfter,
 		Handler: handler,
 	}
 }
 
-func newOnError(handler HandlerFunction) *requestInterceptor {
-	return &requestInterceptor{
+func newOnError(handler HandlerFunction) *interceptor {
+	return &interceptor{
 		Type:    constOnError,
 		Handler: handler,
 	}
 }
 
-func (r *requestInterceptors) addBefore(handler HandlerFunction) {
+func (r *interceptors) addBefore(handler HandlerFunction) {
 	*r = append(*r, newBefore(handler))
 }
 
-func (r *requestInterceptors) addAfter(handler HandlerFunction) {
+func (r *interceptors) addAfter(handler HandlerFunction) {
 	*r = append(*r, newAfter(handler))
 }
 
-func (r *requestInterceptors) addOnError(handler HandlerFunction) {
+func (r *interceptors) addOnError(handler HandlerFunction) {
 	*r = append(*r, newOnError(handler))
 }
 
-func (r *requestInterceptors) before(c *RequestContext) error {
-	for _, rI := range *r {
-		if rI.Type == constBefore {
-			if err := rI.Handler(c); err != nil {
+func (r *interceptors) before(c *RequestContext) error {
+	for _, interceptor := range *r {
+		if interceptor.Type == constBefore {
+			if err := interceptor.Handler(c); err != nil {
 				return err
 			}
 		}
 	}
 	return nil
 }
-func (r *requestInterceptors) after(c *RequestContext) error {
-	for _, rI := range *r {
-		if rI.Type == constAfter {
-			if err := rI.Handler(c); err != nil {
+func (r *interceptors) after(c *RequestContext) error {
+	for _, interceptor := range *r {
+		if interceptor.Type == constAfter {
+			if err := interceptor.Handler(c); err != nil {
 				return err
 			}
 		}
@@ -68,10 +68,10 @@ func (r *requestInterceptors) after(c *RequestContext) error {
 	return nil
 }
 
-func (r *requestInterceptors) onError(c *RequestContext) error {
-	for _, rI := range *r {
-		if rI.Type == constOnError {
-			if err := rI.Handler(c); err != nil {
+func (r *interceptors) onError(c *RequestContext) error {
+	for _, interceptor := range *r {
+		if interceptor.Type == constOnError {
+			if err := interceptor.Handler(c); err != nil {
 				return err
 			}
 		}

@@ -4,12 +4,14 @@ import (
 	"net/http"
 	"github.com/gorilla/pat"
 	"bytes"
+	"sort"
+	"fmt"
 )
 
 // Pi represents the core of the API toolkit.
 type Pi struct {
 	router *pat.Router
-	routes []*route
+	routes routes
 }
 
 // New returns a new Pi.
@@ -29,7 +31,9 @@ func (p *Pi) Route(routeURL string, childRoutes ...*route) *route {
 // ListenAndServe listens on the TCP network address srv.Addr and then calls
 // Serve to handle requests on incoming connections. If srv.Addr is blank, ":http" is used.
 func (p *Pi) ListenAndServe(addr string) error {
+	sort.Sort(p.routes)
 	for _, route := range p.routes {
+		fmt.Println(route.RouteURL)
 		p.constructPath(route)
 	}
 	return http.ListenAndServe(addr, p)
@@ -40,17 +44,17 @@ func (p *Pi) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	p.router.ServeHTTP(w, r)
 }
 
-func wrapHandler(handler HandlerFunction, parentRoutes ...*route) http.HandlerFunc {
+func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*route) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var err error
-		context := newRequestContext(w, r)
+		context := newRequestContext(w, r, routeURL)
 		onError := func() {
 			for _, parentRoute := range parentRoutes {
-				parentRoute.interceptors.onError(context)
+				parentRoute.Interceptors.onError(context)
 			}
 		}
 		for _, parentRoute := range parentRoutes {
-			if err = parentRoute.interceptors.before(context); err != nil {
+			if err = parentRoute.Interceptors.before(context); err != nil {
 				onError()
 				return
 			}
@@ -60,7 +64,7 @@ func wrapHandler(handler HandlerFunction, parentRoutes ...*route) http.HandlerFu
 			return
 		}
 		for _, parentRoute := range parentRoutes {
-			if err = parentRoute.interceptors.after(context); err != nil {
+			if err = parentRoute.Interceptors.after(context); err != nil {
 				break
 			}
 		}
@@ -69,14 +73,15 @@ func wrapHandler(handler HandlerFunction, parentRoutes ...*route) http.HandlerFu
 
 func (p *Pi) constructPath(parentRoutes ...*route) {
 	lastRoute := parentRoutes[len(parentRoutes) - 1]
-	for _, childRoute := range lastRoute.childRoutes {
+	for _, childRoute := range lastRoute.ChildRoutes {
 		p.constructPath(append(parentRoutes, childRoute)...)
 	}
-	routeURL := bytes.Buffer{}
+	routeURLBuffer := bytes.Buffer{}
 	for _, route := range parentRoutes {
-		routeURL.WriteString(route.routeURL)
+		routeURLBuffer.WriteString(route.RouteURL)
 	}
-	for method, handler := range lastRoute.methods {
-		p.router.Add(method, routeURL.String(), wrapHandler(handler, parentRoutes...))
+	routeURL := routeURLBuffer.String()
+	for method, handler := range lastRoute.Methods {
+		p.router.Add(method, routeURL, wrapHandler(handler, routeURL, parentRoutes...))
 	}
 }
