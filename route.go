@@ -85,6 +85,12 @@ func (r *route) Options(handlerFunc HandlerFunction) *route {
 	return r
 }
 
+// Head registers an HandlerFunction to handle HEAD requests.
+func (r *route) Head(handlerFunc HandlerFunction) *route {
+	r.Methods["HEAD"] = handlerFunc
+	return r
+}
+
 func (r routes) Len() int {
 	return len(r)
 }
