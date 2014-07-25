@@ -5,7 +5,6 @@ import (
 	"github.com/gorilla/pat"
 	"bytes"
 	"sort"
-	"fmt"
 )
 
 // Pi represents the core of the API toolkit.
@@ -33,7 +32,6 @@ func (p *Pi) Route(routeURL string, childRoutes ...*route) *route {
 func (p *Pi) ListenAndServe(addr string) error {
 	sort.Sort(p.routes)
 	for _, route := range p.routes {
-		fmt.Println(route.RouteURL)
 		p.constructPath(route)
 	}
 	return http.ListenAndServe(addr, p)
