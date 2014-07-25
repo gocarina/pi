@@ -6,6 +6,11 @@ import "net/http"
 type HandlerFunction func(*RequestContext) error
 
 // FileServeHandler registers the specified folder to be served on the specified route.
+// For example:
+//	p := pi.New()
+//	p.Route("/image", pi.FileServeHandler("/var/www/public/images"))
+//	p.ListenAndServe(":8080")
+//
 func FileServeHandler(path string) HandlerFunction {
 	return func(c *RequestContext) error {
 		file := c.R.URL.Query().Get(":file")
