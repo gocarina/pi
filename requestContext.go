@@ -102,3 +102,35 @@ func (c *RequestContext) GetJSONObject(object interface{}) error {
 	}
 	return json.Unmarshal(rawBody, &object)
 }
+
+// GetXMLObject call xml.Unmarshal by sending the reference of the given object.
+func (c *RequestContext) GetXMLObject(object interface{}) error {
+	rawBody, err := c.GetRawBody()
+	if err != nil {
+		return err
+	}
+	return xml.Unmarshal(rawBody, &object)
+}
+
+// GetURLParam returns an URL parameter.
+// For example, given this URL:
+//		/user?id=1234
+//
+//		fmt.Println(c.GetURLParam("id"))
+//		// Output 1234
+//
+func (c *RequestContext) GetURLParam(param string) string { return c.R.FormValue(param) }
+
+// GetRouteVariable returns a route variable.
+// For example:
+//		getUserByID := func(c *RequestContext) error {
+//			id := c.GetRouteVariable("id")
+//			// Do something with the ID.
+//			return nil
+//		}
+//
+//		p := pi.New()
+//		p.Route("/user/{id}").Get(getUserByID)
+//		p.ListenAndServe(":8080")
+//
+func (c *RequestContext) GetRouteVariable(key string) string { return c.R.URL.Query().Get(":" + key) }
