@@ -1,12 +1,11 @@
 package pi
 
 import (
-	"net/http"
-	"github.com/gorilla/pat"
 	"bytes"
+	"github.com/gorilla/pat"
+	"net/http"
 	"sort"
 )
-
 
 // Pi represents the core of the API toolkit.
 type Pi struct {
@@ -71,7 +70,7 @@ func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*rout
 }
 
 func (p *Pi) constructPath(parentRoutes ...*route) {
-	lastRoute := parentRoutes[len(parentRoutes) - 1]
+	lastRoute := parentRoutes[len(parentRoutes)-1]
 	for _, childRoute := range lastRoute.ChildRoutes {
 		p.constructPath(append(parentRoutes, childRoute)...)
 	}

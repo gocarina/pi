@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"net/http"
 	"mime/multipart"
+	"net/http"
 )
 
 var (
@@ -124,7 +124,9 @@ func (c *RequestContext) GetXMLObject(object interface{}) error {
 //		fmt.Println(c.GetURLParam("id"))
 //		// Outputs 1234
 //
-func (c *RequestContext) GetURLParam(param string) string { return c.R.FormValue(param) }
+func (c *RequestContext) GetURLParam(param string) string {
+	return c.R.FormValue(param)
+}
 
 // GetRouteVariable returns a route variable.
 // For example:
@@ -138,7 +140,9 @@ func (c *RequestContext) GetURLParam(param string) string { return c.R.FormValue
 //		p.Route("/user/{id}").Get(getUserByID)
 //		p.ListenAndServe(":8080")
 //
-func (c *RequestContext) GetRouteVariable(key string) string { return c.R.URL.Query().Get(":" + key) }
+func (c *RequestContext) GetRouteVariable(key string) string {
+	return c.R.URL.Query().Get(":" + key)
+}
 
 // GetFileHeaders returns an array of FileHeader.
 // For example:

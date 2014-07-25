@@ -1,8 +1,8 @@
 package pi
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func test1Handler(c *RequestContext) error {
