@@ -156,7 +156,7 @@ func (c *RequestContext) GetRouteVariable(key string) string { return c.R.URL.Qu
 //		p.ListenAndServe(":8080")
 //
 func (c *RequestContext) GetFileHeaders(key string) ([]*multipart.FileHeader, error) {
-	if err := c.R.ParseMultipartForm(32 << 2); err != nil {
+	if err := c.R.ParseMultipartForm(32 << 20); err != nil {
 		return nil, err
 	}
 	if c.R.MultipartForm != nil && c.R.MultipartForm.File[key] != nil {
