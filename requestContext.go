@@ -68,14 +68,11 @@ func (c *RequestContext) WriteXML(object interface{}) error {
 }
 
 // GetBody return the body as a ReadCloser. It is the client responsibility to close the body.
-func (c *RequestContext) GetBody() (io.ReadCloser, error) { return c.R.Body }
+func (c *RequestContext) GetBody() io.ReadCloser { return c.R.Body }
 
 // GetRawBody return the body as a byte array. The body is already close.
 func (c *RequestContext) GetRawBody() ([]byte, error) {
-	body, err := c.GetBody()
-	if err != nil {
-		return nil, err
-	}
+	body := c.GetBody()
 	defer body.Close()
 	rawBody, err := ioutil.ReadAll(body)
 	if err != nil {

@@ -8,7 +8,7 @@ import (
 
 var (
 	debugMode   = false
-	debugOutput = os.Stdout
+	debugOutput = io.Writer(os.Stdout)
 )
 
 // SetDebug sets the debugMode, logging every requests and pretty prints JSON and XML.
