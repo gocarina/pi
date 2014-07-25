@@ -7,6 +7,11 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"mime/multipart"
+)
+
+var (
+	errNoFiles = fmt.Errorf("no files")
 )
 
 // RequestContext represents the context of the HTTP request.
@@ -134,3 +139,28 @@ func (c *RequestContext) GetURLParam(param string) string { return c.R.FormValue
 //		p.ListenAndServe(":8080")
 //
 func (c *RequestContext) GetRouteVariable(key string) string { return c.R.URL.Query().Get(":" + key) }
+
+// GetFileHeaders returns an array of FileHeader.
+// For example:
+//		getImages := func(c *RequestContext) error {
+//			files, err := c.GetFileHeaders("files")
+//			if err != nil {
+//				return pi.NewError(400, err)
+//			}
+//			// Handle files
+//			return nil
+//		}
+//
+//		p := pi.New()
+//		p.Route("/images").Post(getImages)
+//		p.ListenAndServe(":8080")
+//
+func (c *RequestContext) GetFileHeaders(key string) ([]*multipart.FileHeader, error) {
+	if err := c.R.ParseMultipartForm(32 << 2); err != nil {
+		return nil, err
+	}
+	if c.R.MultipartForm != nil && c.R.MultipartForm.File[key] != nil {
+		return c.R.MultipartForm.File[key], nil
+	}
+	return nil, errNoFiles
+}
