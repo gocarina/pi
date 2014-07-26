@@ -2,6 +2,8 @@ package pi
 
 import (
 	"net/http"
+	"fmt"
+	"os"
 )
 
 // The HandlerFunction type is an adapter to allow the use of ordinary functions as route handlers.
@@ -12,6 +14,11 @@ type HandlerFunction func(*RequestContext) error
 // p := New()
 // p.Router("/files").Get(ServeFileHandler("/tmp"))
 func ServeFileHandler(path string, allowBrowsing bool) HandlerFunction {
+	if debugMode {
+		if allowBrowsing {
+			fmt.Fprintln(os.Stderr, "ServeFileHandler is vulnerable to Directory traversal attack when using allowBrowsing, use with caution!")
+		}
+	}
 	return func(c *RequestContext) error {
 		if allowBrowsing {
 			fullPath := c.R.URL.String()
