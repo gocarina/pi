@@ -11,9 +11,7 @@ type route struct {
 
 type routes []*route
 
-// Route adds a new sub route to a parent Route.
-// See pi.Route to add root Routes.
-func Route(RouteURL string, ChildRoutes ...*route) *route {
+func newRoute(RouteURL string, ChildRoutes ...*route) *route {
 	return &route{
 		RouteURL:    RouteURL,
 		ChildRoutes: ChildRoutes,
@@ -88,6 +86,12 @@ func (r *route) Options(handlerFunc HandlerFunction) *route {
 // Head registers an HandlerFunction to handle HEAD requests.
 func (r *route) Head(handlerFunc HandlerFunction) *route {
 	r.Methods["HEAD"] = handlerFunc
+	return r
+}
+
+// Custom registers an HandlerFunction to handle custom requests.
+func (r *route) Custom(method string, handlerFunc HandlerFunction) *route {
+	r.Methods[method] = handlerFunc
 	return r
 }
 

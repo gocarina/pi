@@ -32,9 +32,17 @@ func newRequestContext(w http.ResponseWriter, r *http.Request, routeURL string) 
 	}
 }
 
+// WriteString writes the specified string to the ResponseWriter.
+func (c *RequestContext) WriteString(s string) error {
+	if _, err := c.W.Write([]byte(s)); err != nil {
+		return err
+	}
+	return nil
+}
+
 // WriteJSON marshal the object to JSON and writes it via the ResponseWriter.
 func (c *RequestContext) WriteJSON(object interface{}) error {
-	c.W.Header().Add("Content-Type", "application/json; charset=utf-8")
+	c.W.Header().Set("Content-Type", "application/json; charset=utf-8")
 	if debugMode {
 		output, err := json.MarshalIndent(object, "", "  ")
 		if err != nil {
@@ -54,7 +62,7 @@ func (c *RequestContext) WriteJSON(object interface{}) error {
 
 // WriteXML marshal the object to XML and writes it via the ResponseWriter.
 func (c *RequestContext) WriteXML(object interface{}) error {
-	c.W.Header().Add("Content-Type", "application/xml; charset=utf-8")
+	c.W.Header().Set("Content-Type", "application/xml; charset=utf-8")
 	if debugMode {
 		output, err := xml.MarshalIndent(object, "", "  ")
 		if err != nil {

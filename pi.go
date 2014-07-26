@@ -20,11 +20,16 @@ func New() *Pi {
 	}
 }
 
-// Route adds a route to the Pi router.
-func (p *Pi) Route(routeURL string, childRoutes ...*route) *route {
-	route := Route(routeURL, childRoutes...)
+// Router adds a route to the Pi router.
+func (p *Pi) Router(routeURL string, childRoutes ...*route) *route {
+	route := newRoute(routeURL, childRoutes...)
 	p.routes = append(p.routes, route)
 	return route
+}
+
+// Route adds a subroute to a router or router.
+func (p *Pi) Route(routeURL string, childRoutes ...*route) *route {
+	return newRoute(routeURL, childRoutes...)
 }
 
 // ListenAndServe listens on the TCP network address srv.Addr and then calls
@@ -70,7 +75,7 @@ func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*rout
 }
 
 func (p *Pi) constructPath(parentRoutes ...*route) {
-	lastRoute := parentRoutes[len(parentRoutes)-1]
+	lastRoute := parentRoutes[len(parentRoutes) - 1]
 	for _, childRoute := range lastRoute.ChildRoutes {
 		p.constructPath(append(parentRoutes, childRoute)...)
 	}
@@ -79,6 +84,9 @@ func (p *Pi) constructPath(parentRoutes ...*route) {
 		routeURLBuffer.WriteString(route.RouteURL)
 	}
 	routeURL := routeURLBuffer.String()
+	if len(routeURL) > 2 && routeURL[0:2] == "//" {
+		routeURL = routeURL[1:]
+	}
 	for method, handler := range lastRoute.Methods {
 		p.router.Add(method, routeURL, wrapHandler(handler, routeURL, parentRoutes...))
 	}
