@@ -1,19 +1,38 @@
 package pi
 
-import "net/http"
+import (
+	"net/http"
+	"fmt"
+)
 
-// HandlerFunction represents the function called when the specified route is reached.
+// The HandlerFunction type is an adapter to allow the use of ordinary functions as route handlers.
 type HandlerFunction func(*RequestContext) error
 
-// FileServeHandler registers the specified folder to be served on the specified route.
-func FileServeHandler(path string) HandlerFunction {
+// ServeFileHandler replies to the request with the contents of the named file or directory.
+// For example:
+// p := New()
+// p.Router("/files",
+// 		p.Route("/{file}").Get(ServeFileHandler("/tmp", true)),
+// ).Get(ServeFileHandler("C:\\"))
+func ServeFileHandler(path string, allowBrowsing bool) HandlerFunction {
 	return func(c *RequestContext) error {
-		file := c.R.URL.Query().Get(":file")
-		if file != "" {
-			http.ServeFile(c.W, c.R, path)
-		} else {
-			http.ServeFile(c.W, c.R, path+"/"+file)
+		if allowBrowsing {
+			fullPath := c.R.URL.String()
+			if len(fullPath) > len(c.RouteURL) {
+				path += fullPath[len(c.RouteURL):]
+			}
 		}
+		http.ServeFile(c.W, c.R, path)
+		return nil
+	}
+}
+
+// ErrorHandler returns the status code string representation and set the status code as specified.
+// See http.StatusText.
+func ErrorHandler(statusCode int) HandlerFunction {
+	return func(c *RequestContext) error {
+		c.SetStatusCode(statusCode)
+		c.WriteString(http.StatusText(statusCode))
 		return nil
 	}
 }

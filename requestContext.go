@@ -80,8 +80,15 @@ func (c *RequestContext) WriteXML(object interface{}) error {
 	return nil
 }
 
+// SetStatusCode sets the response status code.
+func (c *RequestContext) SetStatusCode(statusCode int)  {
+	c.W.WriteHeader(statusCode)
+}
+
 // GetBody return the body as a ReadCloser. It is the client responsibility to close the body.
-func (c *RequestContext) GetBody() io.ReadCloser { return c.R.Body }
+func (c *RequestContext) GetBody() io.ReadCloser {
+	return c.R.Body
+}
 
 // GetRawBody returns the body as a byte array, closing the body reader.
 func (c *RequestContext) GetRawBody() ([]byte, error) {
