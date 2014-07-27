@@ -40,6 +40,12 @@ func (r *route) Error(e errorInterceptor) *route {
 	return r
 }
 
+// Intercept registers an interceptor to be called before, after or on error.
+func (r *route) Intercept(ci interface {}) *route {
+	r.Interceptors.addInterceptor(ci)
+	return r
+}
+
 // Any registers an HandlerFunction to handle any requests.
 func (r *route) Any(handlerFunc HandlerFunction) *route {
 	r.Get(handlerFunc)

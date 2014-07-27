@@ -42,6 +42,19 @@ func (i *interceptors) addError(e errorInterceptor) {
 	i.Error = append(i.Error, e)
 }
 
+// addInterceptor appends the interceptor whether as Before, After or Error.
+func (i *interceptors) addInterceptor(ci interface {}) {
+	if b, ok := ci.(beforeInterceptor); ok {
+		i.addBefore(b)
+	}
+	if a, ok := ci.(afterInterceptor); ok {
+		i.addAfter(a)
+	}
+	if e, ok := ci.(errorInterceptor); ok {
+		i.addError(e)
+	}
+}
+
 // runBeforeInterceptors runs all the Before interceptors, breaking if an error is thrown.
 func (i *interceptors) runBeforeInterceptors(c *RequestContext) error {
 	for _, b := range i.Before {
