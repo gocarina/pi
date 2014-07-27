@@ -54,6 +54,7 @@ func (r *route) Any(handlerFunc HandlerFunction) *route {
 	r.Delete(handlerFunc)
 	r.Patch(handlerFunc)
 	r.Options(handlerFunc)
+	r.Head(handlerFunc)
 	return r
 }
 
