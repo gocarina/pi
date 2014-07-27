@@ -33,10 +33,12 @@ func newRequestContext(w http.ResponseWriter, r *http.Request, routeURL string) 
 	}
 }
 
-// WriteString writes the specified string to the ResponseWriter.
-func (c *RequestContext) WriteString(s string) error {
-	if _, err := c.W.Write([]byte(s)); err != nil {
-		return err
+// WriteString writes the specified strings to the ResponseWriter.
+func (c *RequestContext) WriteString(strings ...string) error {
+	for _, s := range strings {
+		if _, err := c.W.Write([]byte(s)); err != nil {
+			return err
+		}
 	}
 	return nil
 }

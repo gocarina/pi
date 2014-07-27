@@ -22,21 +22,21 @@ func newRoute(RouteURL string, ChildRoutes ...*route) *route {
 	}
 }
 
-// Before registers an HandlerFunction to be called before the request is handled.
-func (r *route) Before(handler HandlerFunction) *route {
-	r.Interceptors.addBefore(handler)
+// Before registers an interceptor to be called before the request is handled.
+func (r *route) Before(b beforeInterceptor) *route {
+	r.Interceptors.addBefore(b)
 	return r
 }
 
-// After registers an HandlerFunction to be called after the request has been handled.
-func (r *route) After(handler HandlerFunction) *route {
-	r.Interceptors.addAfter(handler)
+// After registers an interceptor to be called after the request has been handled.
+func (r *route) After(a afterInterceptor) *route {
+	r.Interceptors.addAfter(a)
 	return r
 }
 
-// OnError registers an HandlerFunction to be called when an error occurs in the main handler or any Before interceptor.
-func (r *route) OnError(handler HandlerFunction) *route {
-	r.Interceptors.addOnError(handler)
+// Error registers an interceptor to be called when an error occurs in the request handler or in any Before interceptor.
+func (r *route) Error(e errorInterceptor) *route {
+	r.Interceptors.addError(e)
 	return r
 }
 

@@ -5,6 +5,8 @@ import (
 	"github.com/gorilla/pat"
 	"net/http"
 	"sort"
+	"fmt"
+	"os"
 )
 
 // Pi represents the core of the API toolkit.
@@ -47,29 +49,34 @@ func (p *Pi) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	p.router.ServeHTTP(w, r)
 }
 
-// wrapHandler wraps a route handler to add interceptors and run the HandlerFunction.
+// wrapHandler wraps a route handler to run the interceptors and the handler.
 func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*route) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var err error
 		context := newRequestContext(w, r, routeURL)
-		onError := func() {
+		errorInterceptors := func(err error) {
+			errorsHandled := false
 			for _, parentRoute := range parentRoutes {
-				parentRoute.Interceptors.onError(context)
+				errorsHandled = errorsHandled || parentRoute.Interceptors.runErrorInterceptors(context, err)
+			}
+			if !errorsHandled {
+				if piError, ok := err.(HTTPError); ok {
+					http.Error(context.W, piError.Err.Error(), piError.StatusCode)
+				}
 			}
 		}
 		for _, parentRoute := range parentRoutes {
-			if err = parentRoute.Interceptors.before(context); err != nil {
-				onError()
+			if err := parentRoute.Interceptors.runBeforeInterceptors(context); err != nil {
+				errorInterceptors(err)
 				return
 			}
 		}
 		if err := handler(context); err != nil {
-			onError()
+			errorInterceptors(err)
 			return
 		}
 		for _, parentRoute := range parentRoutes {
-			if err = parentRoute.Interceptors.after(context); err != nil {
-				break
+			if err := parentRoute.Interceptors.runAfterInterceptors(context); err != nil {
+				fmt.Sprintln(os.Stderr, "after interceptor raised error:", err)
 			}
 		}
 	}
