@@ -22,9 +22,36 @@ func newRoute(RouteURL string, ChildRoutes ...*route) *route {
 	}
 }
 
+type interceptorHelper struct {
+	BeforeFunc HandlerFunction
+	AfterFunc  HandlerFunction
+	ErrorFunc  func(error) HandlerFunction
+}
+
+func (helper *interceptorHelper) Before() HandlerFunction {
+	return helper.BeforeFunc
+}
+
+func (helper *interceptorHelper) After() HandlerFunction {
+	return helper.AfterFunc
+}
+
+func (helper *interceptorHelper) Error(err error) HandlerFunction {
+	return helper.ErrorFunc(err)
+}
+
 // Before registers an interceptor to be called before the request is handled.
 func (r *route) Before(b beforeInterceptor) *route {
 	r.Interceptors.addBefore(b)
+	return r
+}
+
+// BeforeFunc add an an Before handler to the interceptor.
+func (r *route) BeforeFunc(handler HandlerFunction) *route {
+	helper := &interceptorHelper{
+		BeforeFunc: handler,
+	}
+	r.Interceptors.addBefore(helper)
 	return r
 }
 
@@ -34,14 +61,32 @@ func (r *route) After(a afterInterceptor) *route {
 	return r
 }
 
+// AfterFunc add an an After interceptor.
+func (r *route) AfterFunc(handler HandlerFunction) *route {
+	helper := &interceptorHelper{
+		AfterFunc: handler,
+	}
+	r.Interceptors.addAfter(helper)
+	return r
+}
+
 // Error registers an interceptor to be called when an error occurs in the request handler or in any Before interceptor.
 func (r *route) Error(e errorInterceptor) *route {
 	r.Interceptors.addError(e)
 	return r
 }
 
+// ErrorFunc add an an Error interceptor.
+func (r *route) ErrorFunc(handler func (error) HandlerFunction) *route {
+	helper := &interceptorHelper{
+		ErrorFunc: handler,
+	}
+	r.Interceptors.addError(helper)
+	return r
+}
+
 // Intercept registers an interceptor to be called before, after or on error.
-func (r *route) Intercept(ci interface {}) *route {
+func (r *route) Intercept(ci interface{}) *route {
 	r.Interceptors.addInterceptor(ci)
 	return r
 }
