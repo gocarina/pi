@@ -23,6 +23,7 @@ type RequestContext struct {
 	Data     map[interface{}]interface{}
 }
 
+// newRequestContext returns a new RequestContext.
 func newRequestContext(w http.ResponseWriter, r *http.Request, routeURL string) *RequestContext {
 	return &RequestContext{
 		W:        w,

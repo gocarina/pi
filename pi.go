@@ -42,11 +42,12 @@ func (p *Pi) ListenAndServe(addr string) error {
 	return http.ListenAndServe(addr, p)
 }
 
-// ServeHTTP .
+// ServeHTTP servers a route in the HTTP server.
 func (p *Pi) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	p.router.ServeHTTP(w, r)
 }
 
+// wrapHandler wraps a route handler to add interceptors and run the HandlerFunction.
 func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*route) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var err error
@@ -74,8 +75,9 @@ func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*rout
 	}
 }
 
+// constructPath constructs the path to the specified route/sub-route.
 func (p *Pi) constructPath(parentRoutes ...*route) {
-	lastRoute := parentRoutes[len(parentRoutes) - 1]
+	lastRoute := parentRoutes[len(parentRoutes)-1]
 	for _, childRoute := range lastRoute.ChildRoutes {
 		p.constructPath(append(parentRoutes, childRoute)...)
 	}

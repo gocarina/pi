@@ -22,6 +22,7 @@ func SetDebugOutput(writer io.Writer) {
 	debugOutput = writer
 }
 
+// writeDebug writes debug string formatted as: [GET] to [http://localhost] debug_message.
 func writeDebug(method, remoteAddr, output string) {
 	fmt.Fprintf(debugOutput, "[%s] to [%s] %s", method, remoteAddr, output)
 }

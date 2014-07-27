@@ -2,6 +2,8 @@ package pi
 
 import "strings"
 
+// route represents an API route.
+// For example: /user/get/{id}
 type route struct {
 	RouteURL     string
 	ChildRoutes  routes
@@ -11,6 +13,7 @@ type route struct {
 
 type routes []*route
 
+// newRoute returns a new route.
 func newRoute(RouteURL string, ChildRoutes ...*route) *route {
 	return &route{
 		RouteURL:    RouteURL,
@@ -37,6 +40,7 @@ func (r *route) OnError(handler HandlerFunction) *route {
 	return r
 }
 
+// Any registers an HandlerFunction to handle any requests.
 func (r *route) Any(handlerFunc HandlerFunction) *route {
 	r.Get(handlerFunc)
 	r.Post(handlerFunc)

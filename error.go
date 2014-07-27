@@ -8,6 +8,7 @@ type HTTPError struct {
 	Err        error
 }
 
+// Error implements the Error interface.
 func (h HTTPError) Error() string {
 	return fmt.Sprintf("[%d] ", h.StatusCode) + h.Err.Error()
 }
