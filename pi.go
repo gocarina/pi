@@ -60,7 +60,9 @@ func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*rout
 			}
 			if !errorsHandled {
 				if piError, ok := err.(HTTPError); ok {
-					http.Error(context.W, piError.Err.Error(), piError.StatusCode)
+					context.W.Header().Set("Content-Type", piError.ContentType)
+					context.W.WriteHeader(piError.StatusCode)
+					context.WriteString(piError.Error())
 				}
 			}
 		}
