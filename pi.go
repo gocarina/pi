@@ -29,7 +29,7 @@ func (p *Pi) Router(routeURL string, childRoutes ...*route) *route {
 	return route
 }
 
-// Route adds a subroute to a router or router.
+// Route adds a subroute to a route or router.
 func (p *Pi) Route(routeURL string, childRoutes ...*route) *route {
 	return newRoute(routeURL, childRoutes...)
 }
@@ -44,7 +44,7 @@ func (p *Pi) ListenAndServe(addr string) error {
 	return http.ListenAndServe(addr, p)
 }
 
-// ServeHTTP servers a route in the HTTP server.
+// ServeHTTP serves a route in the HTTP server.
 func (p *Pi) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	p.router.ServeHTTP(w, r)
 }
