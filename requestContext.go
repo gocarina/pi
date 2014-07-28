@@ -14,6 +14,12 @@ var (
 	errNoFiles = fmt.Errorf("no files")
 )
 
+// J is an helper to write JSON.
+// Example:
+//		c.WriteJSON(pi.J{"status": "OK"})
+//
+type J map[string]interface{}
+
 // RequestContext represents the context of the HTTP request.
 // It is shared across interceptors and handler.
 type RequestContext struct {
