@@ -17,6 +17,7 @@ import (
 )
 
 
+// GetEveryUsers match /users (GET)
 func GetEveryUsers(c *pi.RequestContext) error {
     users, err := db.GetEveryUsers()
     if err != nil {
@@ -25,6 +26,7 @@ func GetEveryUsers(c *pi.RequestContext) error {
     return c.WriteJSON(users)
 }
 
+// GetSingleUser match /users/{id} (GET)
 func GetSingleUser(c *pi.RequestContext) error {
     user, err := db.GetUserByID(c.GetRouteVariable("id"))
     if err != nil {
@@ -33,10 +35,12 @@ func GetSingleUser(c *pi.RequestContext) error {
     return c.WriteJSON(user)
 }
 
+// MainHandler match / (ANY)
 func MainHandler(c *pi.RequestContext) error {
     return c.WriteString("Hello, 世界")
 }
 
+// AddUser match /users (POST)
 func AddUser(c *pi.RequestContext) error {
     user := &User{}
     if err := c.GetJSONObject(user); err != nil {
@@ -49,13 +53,31 @@ func AddUser(c *pi.RequestContext) error {
     return c.WriteJSON(user)
 }
 
+// DeleteUser match /users/{id} and /users/{id}/delete (DELETE)
+func DeleteUser(c *pi.RequestContext) error {
+    if err := db.DeleteUser(c.GetRouteVariable("id")); err != nil {
+        return http.NewError(404, err)
+    }
+    return c.WriteJSON(pi.J{"status": "OK"})
+}
+
+// AuthorizeUser will be called for each routes starting by "/users"
+func AuthorizeUser(c *pi.RequestContext) error {
+    // Authorize User...
+    return nil
+}
+
 func main() {
     p := pi.New()
     p.Router("/",
         p.Route("/users",
-            p.Route("/{id}").Get(GetSingleUser)
-        ).Get(GetEveryUsers).Post(AddUser)
-    ).Any(MainHandler)
+            p.Route("/{id}",
+                p.Route("/delete").Delete(DeleteUser)).
+            Get(GetSingleUser).Delete(DeleteUser)).
+        Get(GetEveryUsers).Post(AddUser).BeforeFunc(AuthorizeUser))
+    Any(MainHandler)
+    
+    p.ListenAndServe(":8080")
 }
 
 
