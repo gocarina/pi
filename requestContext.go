@@ -89,6 +89,12 @@ func (c *RequestContext) WriteXML(object interface{}) error {
 	return nil
 }
 
+// WriteReader copy the reader to the ResponseWriter.
+func (c *RequestContext) WriteReader(reader io.Reader) error {
+	_, err := io.Copy(c.W, reader)
+	return err
+}
+
 // SetStatusCode sets the response status code.
 func (c *RequestContext) SetStatusCode(statusCode int) {
 	c.W.WriteHeader(statusCode)
