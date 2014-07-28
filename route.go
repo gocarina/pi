@@ -22,6 +22,7 @@ func newRoute(RouteURL string, ChildRoutes ...*route) *route {
 	}
 }
 
+// interceptorHelper is an helper to add single funcs to the interceptor list.
 type interceptorHelper struct {
 	BeforeFunc HandlerFunction
 	AfterFunc  HandlerFunction
