@@ -74,7 +74,7 @@ func main() {
             p.Route("/{id}",
                 p.Route("/delete").Delete(DeleteUser)).
             Get(GetSingleUser).Delete(DeleteUser)).
-        Get(GetEveryUsers).Post(AddUser).BeforeFunc(AuthorizeUser))
+        Get(GetEveryUsers).Post(AddUser).BeforeFunc(AuthorizeUser)).
     Any(MainHandler)
     
     p.ListenAndServe(":8080")
