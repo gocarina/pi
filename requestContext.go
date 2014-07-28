@@ -185,11 +185,9 @@ func (c *RequestContext) GetRouteVariable(key string) string {
 //
 func (c *RequestContext) GetFileHeaders(key string) ([]*multipart.FileHeader, error) {
 	if err := c.R.ParseMultipartForm(32 << 20); err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	if c.R.MultipartForm != nil && c.R.MultipartForm.File[key] != nil {
-		fmt.Println("ok")
 		if debugMode {
 			writeDebug("GetFileHeaders", c.R.RemoteAddr, fmt.Sprintf("got %d files from key %s", len(c.R.MultipartForm.File[key]), key))
 		}
