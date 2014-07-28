@@ -110,7 +110,7 @@ func (c *RequestContext) GetRawBody() ([]byte, error) {
 	if debugMode {
 		writeDebug("GetRawBody", c.R.RemoteAddr, fmt.Sprintf("got %s", string(rawBody)))
 	}
-	return ioutil.ReadAll(body)
+	return rawBody, nil
 }
 
 // GetJSONObject call json.Unmarshal by sending the reference of the given object.
