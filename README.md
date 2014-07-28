@@ -17,7 +17,7 @@ import (
 )
 
 
-// GetEveryUsers match /users (GET)
+// GetEveryUsers matches /users (GET)
 func GetEveryUsers(c *pi.RequestContext) error {
     users, err := db.GetEveryUsers()
     if err != nil {
@@ -26,7 +26,7 @@ func GetEveryUsers(c *pi.RequestContext) error {
     return c.WriteJSON(users)
 }
 
-// GetSingleUser match /users/{id} (GET)
+// GetSingleUser matches /users/{id} (GET)
 func GetSingleUser(c *pi.RequestContext) error {
     user, err := db.GetUserByID(c.GetRouteVariable("id"))
     if err != nil {
@@ -35,12 +35,12 @@ func GetSingleUser(c *pi.RequestContext) error {
     return c.WriteJSON(user)
 }
 
-// MainHandler match / (ANY)
+// MainHandler matches / (ANY)
 func MainHandler(c *pi.RequestContext) error {
     return c.WriteString("Hello, 世界")
 }
 
-// AddUser match /users (POST)
+// AddUser matches /users (POST)
 func AddUser(c *pi.RequestContext) error {
     user := &User{}
     if err := c.GetJSONObject(user); err != nil {
@@ -53,7 +53,7 @@ func AddUser(c *pi.RequestContext) error {
     return c.WriteJSON(user)
 }
 
-// DeleteUser match /users/{id} and /users/{id}/delete (DELETE)
+// DeleteUser matches /users/{id} and /users/{id}/delete (DELETE)
 func DeleteUser(c *pi.RequestContext) error {
     if err := db.DeleteUser(c.GetRouteVariable("id")); err != nil {
         return http.NewError(404, err)
