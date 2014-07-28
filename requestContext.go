@@ -35,6 +35,7 @@ func newRequestContext(w http.ResponseWriter, r *http.Request, routeURL string) 
 
 // WriteString writes the specified strings to the ResponseWriter.
 func (c *RequestContext) WriteString(strings ...string) error {
+	c.W.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	for _, s := range strings {
 		if _, err := c.W.Write([]byte(s)); err != nil {
 			return err
