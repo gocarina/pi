@@ -198,3 +198,31 @@ func (c *RequestContext) GetFileHeaders(key string) ([]*multipart.FileHeader, er
 	}
 	return nil, errNoFiles
 }
+
+// GetHeader returns the first value of the header associated with the given key.
+func (c *RequestContext) GetHeader(key string) string {
+	return c.R.Header.Get(key)
+}
+
+// SetHeader sets the header entries associated with key to
+// the single element value.  It replaces any existing
+// values associated with key.
+func (c *RequestContext) SetHeader(key, value string) {
+	c.R.Header.Set(key, value)
+}
+
+// AddHeader adds the key, value pair to the header.
+// It appends to any existing values associated with key.
+func (c *RequestContext) AddHeader(key, value string) {
+	c.R.Header.Add(key, value)
+}
+
+// DeleteHeader deletes the values associated with key.
+func (c *RequestContext) DeleteHeader(key string) {
+	c.R.Header.Del(key)
+}
+
+// GetHeaders returns the array of values associated with the key.
+func (c *RequestContext) GetHeaders(key string) []string {
+	return c.R.Header[key]
+}
