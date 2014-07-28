@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"net"
 )
 
 var (
@@ -22,7 +23,9 @@ func SetDebugOutput(writer io.Writer) {
 	debugOutput = writer
 }
 
-// writeDebug writes debug string formatted as: [GET] to [http://localhost] debug_message.
+// writeDebug writes debug string formatted as: [GET] to/from [IP address] debug_message.
+// If you are working on localhost and your machine is using IPV6 addresses, you'll get ::1.
 func writeDebug(method, remoteAddr, output string) {
-	fmt.Fprintf(debugOutput, "[%s] to [%s] %s", method, remoteAddr, output)
+	ip, _, _ := net.SplitHostPort(remoteAddr)
+	fmt.Fprintf(debugOutput, "[%s] to/from [%s] %s", method, ip, output)
 }
