@@ -23,14 +23,14 @@ func New() *Pi {
 }
 
 // Router adds a route to the Pi router.
-func (p *Pi) Router(routeURL string, childRoutes ...*route) *route {
+func (p *Pi) Router(routeURL string, childRoutes ...*Route) *Route {
 	route := newRoute(routeURL, childRoutes...)
 	p.routes = append(p.routes, route)
 	return route
 }
 
 // Route adds a subroute to a route or router.
-func (p *Pi) Route(routeURL string, childRoutes ...*route) *route {
+func (p *Pi) Route(routeURL string, childRoutes ...*Route) *Route {
 	return newRoute(routeURL, childRoutes...)
 }
 
@@ -50,7 +50,7 @@ func (p *Pi) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // wrapHandler wraps a route handler to run the interceptors and the handler.
-func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*route) http.HandlerFunc {
+func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*Route) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		context := newRequestContext(w, r, routeURL)
 		errorInterceptors := func(err error) {
@@ -89,7 +89,7 @@ func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*rout
 }
 
 // constructPath constructs the path to the specified route/sub-route.
-func (p *Pi) constructPath(parentRoutes ...*route) {
+func (p *Pi) constructPath(parentRoutes ...*Route) {
 	lastRoute := parentRoutes[len(parentRoutes)-1]
 	for _, childRoute := range lastRoute.ChildRoutes {
 		p.constructPath(append(parentRoutes, childRoute)...)

@@ -2,20 +2,20 @@ package pi
 
 import "strings"
 
-// route represents an API route.
+// Route represents an API Route.
 // For example: /user/get/{id}
-type route struct {
+type Route struct {
 	RouteURL     string
 	ChildRoutes  routes
 	Methods      map[string]HandlerFunction
 	Interceptors interceptors
 }
 
-type routes []*route
+type routes []*Route
 
-// newRoute returns a new route.
-func newRoute(RouteURL string, ChildRoutes ...*route) *route {
-	return &route{
+// newRoute returns a new Route.
+func newRoute(RouteURL string, ChildRoutes ...*Route) *Route {
+	return &Route{
 		RouteURL:    RouteURL,
 		ChildRoutes: ChildRoutes,
 		Methods:     make(map[string]HandlerFunction),
@@ -42,13 +42,13 @@ func (helper *interceptorHelper) Error(err error) HandlerFunction {
 }
 
 // Before registers an interceptor to be called before the request is handled.
-func (r *route) Before(b beforeInterceptor) *route {
+func (r *Route) Before(b beforeInterceptor) *Route {
 	r.Interceptors.addBefore(b)
 	return r
 }
 
 // BeforeFunc add an an Before handler to the interceptor.
-func (r *route) BeforeFunc(handler HandlerFunction) *route {
+func (r *Route) BeforeFunc(handler HandlerFunction) *Route {
 	helper := &interceptorHelper{
 		BeforeFunc: handler,
 	}
@@ -57,13 +57,13 @@ func (r *route) BeforeFunc(handler HandlerFunction) *route {
 }
 
 // After registers an interceptor to be called after the request has been handled.
-func (r *route) After(a afterInterceptor) *route {
+func (r *Route) After(a afterInterceptor) *Route {
 	r.Interceptors.addAfter(a)
 	return r
 }
 
 // AfterFunc add an an After interceptor.
-func (r *route) AfterFunc(handler HandlerFunction) *route {
+func (r *Route) AfterFunc(handler HandlerFunction) *Route {
 	helper := &interceptorHelper{
 		AfterFunc: handler,
 	}
@@ -72,13 +72,13 @@ func (r *route) AfterFunc(handler HandlerFunction) *route {
 }
 
 // Error registers an interceptor to be called when an error occurs in the request handler or in any Before interceptor.
-func (r *route) Error(e errorInterceptor) *route {
+func (r *Route) Error(e errorInterceptor) *Route {
 	r.Interceptors.addError(e)
 	return r
 }
 
 // ErrorFunc add an an Error interceptor.
-func (r *route) ErrorFunc(handler func (error) HandlerFunction) *route {
+func (r *Route) ErrorFunc(handler func (error) HandlerFunction) *Route {
 	helper := &interceptorHelper{
 		ErrorFunc: handler,
 	}
@@ -87,13 +87,13 @@ func (r *route) ErrorFunc(handler func (error) HandlerFunction) *route {
 }
 
 // Intercept registers an interceptor to be called before, after or on error.
-func (r *route) Intercept(ci interface{}) *route {
+func (r *Route) Intercept(ci interface{}) *Route {
 	r.Interceptors.addInterceptor(ci)
 	return r
 }
 
 // Any registers an HandlerFunction to handle any requests.
-func (r *route) Any(handlerFunc HandlerFunction) *route {
+func (r *Route) Any(handlerFunc HandlerFunction) *Route {
 	r.Get(handlerFunc)
 	r.Post(handlerFunc)
 	r.Put(handlerFunc)
@@ -105,49 +105,49 @@ func (r *route) Any(handlerFunc HandlerFunction) *route {
 }
 
 // Get registers an HandlerFunction to handle GET requests.
-func (r *route) Get(handlerFunc HandlerFunction) *route {
+func (r *Route) Get(handlerFunc HandlerFunction) *Route {
 	r.Methods["GET"] = handlerFunc
 	return r
 }
 
 // Post registers an HandlerFunction to handle POST requests.
-func (r *route) Post(handlerFunc HandlerFunction) *route {
+func (r *Route) Post(handlerFunc HandlerFunction) *Route {
 	r.Methods["POST"] = handlerFunc
 	return r
 }
 
 // Put registers an HandlerFunction to handle PUT requests.
-func (r *route) Put(handlerFunc HandlerFunction) *route {
+func (r *Route) Put(handlerFunc HandlerFunction) *Route {
 	r.Methods["PUT"] = handlerFunc
 	return r
 }
 
 // Delete registers an HandlerFunction to handle DELETE requests.
-func (r *route) Delete(handlerFunc HandlerFunction) *route {
+func (r *Route) Delete(handlerFunc HandlerFunction) *Route {
 	r.Methods["DELETE"] = handlerFunc
 	return r
 }
 
 // Patch registers an HandlerFunction to handle PATCH requests.
-func (r *route) Patch(handlerFunc HandlerFunction) *route {
+func (r *Route) Patch(handlerFunc HandlerFunction) *Route {
 	r.Methods["PATCH"] = handlerFunc
 	return r
 }
 
 // Options registers an HandlerFunction to handle OPTIONS requests.
-func (r *route) Options(handlerFunc HandlerFunction) *route {
+func (r *Route) Options(handlerFunc HandlerFunction) *Route {
 	r.Methods["OPTIONS"] = handlerFunc
 	return r
 }
 
 // Head registers an HandlerFunction to handle HEAD requests.
-func (r *route) Head(handlerFunc HandlerFunction) *route {
+func (r *Route) Head(handlerFunc HandlerFunction) *Route {
 	r.Methods["HEAD"] = handlerFunc
 	return r
 }
 
 // Custom registers an HandlerFunction to handle custom requests.
-func (r *route) Custom(method string, handlerFunc HandlerFunction) *route {
+func (r *Route) Custom(method string, handlerFunc HandlerFunction) *Route {
 	r.Methods[method] = handlerFunc
 	return r
 }
