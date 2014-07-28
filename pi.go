@@ -63,6 +63,10 @@ func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*rout
 					context.W.Header().Set("Content-Type", piError.ContentType)
 					context.W.WriteHeader(piError.StatusCode)
 					context.WriteString(piError.Error())
+				} else {
+					context.W.Header().Set("Content-Type", "text/plain; charset=utf-8")
+					context.W.WriteHeader(500)
+					context.WriteString(err.Error())
 				}
 			}
 		}

@@ -22,7 +22,7 @@ func NewError(statusCode int, err error) HTTPError {
 	return HTTPError{
 		StatusCode:    statusCode,
 		Err:           err,
-		ErrorTemplate: `{"errorCode": %d, "errorMessage": %s}`,
+		ErrorTemplate: `{"errorCode": %d, "errorMessage": "%s"}`,
 		ContentType:   "application/json; charset=UTF-8",
 	}
 }
