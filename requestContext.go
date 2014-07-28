@@ -90,7 +90,7 @@ func (c *RequestContext) WriteXML(object interface{}) error {
 }
 
 // SetStatusCode sets the response status code.
-func (c *RequestContext) SetStatusCode(statusCode int)  {
+func (c *RequestContext) SetStatusCode(statusCode int) {
 	c.W.WriteHeader(statusCode)
 }
 
@@ -139,6 +139,17 @@ func (c *RequestContext) GetXMLObject(object interface{}) error {
 		return err
 	}
 	return xml.Unmarshal(rawBody, &object)
+}
+
+// GetRouteExtraPath returns the extra path.
+// For example:
+// 		for route("/files"), "/files/home/user/.emacs" will return "/home/user/.emacs"
+func (c *RequestContext) GetRouteExtraPath() (path string) {
+	fullPath := c.R.URL.String()
+	if len(fullPath) > len(c.RouteURL) {
+		path = fullPath[len(c.RouteURL):]
+	}
+	return path
 }
 
 // GetURLParam returns an URL parameter.

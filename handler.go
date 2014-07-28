@@ -21,10 +21,7 @@ func ServeFileHandler(path string, allowBrowsing bool) HandlerFunction {
 	}
 	return func(c *RequestContext) error {
 		if allowBrowsing {
-			fullPath := c.R.URL.String()
-			if len(fullPath) > len(c.RouteURL) {
-				path += fullPath[len(c.RouteURL):]
-			}
+			path += c.GetRouteExtraPath()
 		}
 		http.ServeFile(c.W, c.R, path)
 		return nil
