@@ -27,5 +27,5 @@ func SetDebugOutput(writer io.Writer) {
 // If you are working on localhost and your machine is using IPV6 addresses, you'll get ::1.
 func writeDebug(method, remoteAddr, output string) {
 	ip, _, _ := net.SplitHostPort(remoteAddr)
-	fmt.Fprintf(debugOutput, "[%s] to/from [%s] %s", method, ip, output)
+	fmt.Fprintf(debugOutput, "[%s] to/from [%s] %s\n", method, ip, output)
 }
