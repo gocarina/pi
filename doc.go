@@ -38,7 +38,9 @@ There is 3 kind of interceptor:
 
 - Before: called before the request is handled by the handler. If there is an error in a Before interceptor, the request flow is stopped and
 Error interceptors are called.
+
 - After: called after the request has been handled by the handled. Errors are ignored (print to the error output).
+
 - Error: called when an error occurs in any Before interceptor or in the request handler. Errors are completely ignored.
 
 Interceptors and Handlers are both HandlerFunction.
