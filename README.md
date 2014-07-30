@@ -1,7 +1,7 @@
 pi
 ==
 
-Simple toolkit for API in Go.
+Simple toolkit for API in Go: http://godoc.org/github.com/gocarina/pi.
 
 It offers a simple but powerful request router with interceptors to execute code before, after or when an error occurs while handling the request.
 
@@ -81,5 +81,5 @@ func main() {
 }
 
 
-
 ```
+
