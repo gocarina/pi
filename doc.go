@@ -37,11 +37,11 @@ If there was interceptors on the route "/products", it would also apply for the 
 There is 3 kind of interceptor:
 
 - Before: called before the request is handled by the handler. If there is an error in a Before interceptor, the request flow is stopped and
- Error interceptors are called.
+Error interceptors are called.
 - After: called after the request has been handled by the handled. Errors are ignored (print to the error output).
 - Error: called when an error occurs in any Before interceptor or in the request handler. Errors are completely ignored.
 
-Interceptors and Handler are both HandlerFunction.
+Interceptors and Handlers are both HandlerFunction.
 Here is a typical example of HandlerFunction:
 
 		func SomeHandlerOrInterceptor(c *pi.RequestContext) (err error) {
@@ -52,7 +52,7 @@ Here is a typical example of HandlerFunction:
 			return c.WriteJSON(pi.J{"status": "OK"}) // Output: { "status": "OK" }
 		}
 
-The RequestContext has some useful functions each one of them are documented here.
+The RequestContext has some useful methods, please, see below for more information.
 
 If you have any problems or questions, create an issue to our github page project: https://github.com/gocarina/pi
 
