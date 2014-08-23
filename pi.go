@@ -2,11 +2,11 @@ package pi
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/gorilla/pat"
 	"net/http"
-	"sort"
-	"fmt"
 	"os"
+	"sort"
 )
 
 // Pi represents the core of the API toolkit.
@@ -60,8 +60,8 @@ func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*Rout
 			}
 			if !errorsHandled {
 				if piError, ok := err.(HTTPError); ok {
-					context.W.Header().Set("Content-Type", piError.ContentType)
-					context.W.WriteHeader(piError.StatusCode)
+					context.W.Header().Set("Content-Type", piError.ContentType())
+					context.W.WriteHeader(piError.StatusCode())
 					context.WriteString(piError.Error())
 				} else {
 					context.W.Header().Set("Content-Type", "text/plain; charset=utf-8")
