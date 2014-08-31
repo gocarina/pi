@@ -169,6 +169,15 @@ func (c *RequestContext) GetURLParam(param string) string {
 	return c.R.FormValue(param)
 }
 
+// GetURLParamOrDefault returns an URL parameter or the defaultValue if the value is empty.
+func (c *RequestContext) GetURLParamOrDefault(param, defaultValue string) string {
+	value := c.GetURLParam(param)
+	if value == "" {
+		return defaultValue
+	}
+	return value
+}
+
 // GetRouteVariable returns a route variable.
 // For example:
 //		getUserByID := func(c *RequestContext) error {
@@ -219,6 +228,15 @@ func (c *RequestContext) GetFileHeaders(key string) ([]*multipart.FileHeader, er
 // GetHeader returns the first value of the header of the request associated with the given key.
 func (c *RequestContext) GetHeader(key string) string {
 	return c.R.Header.Get(key)
+}
+
+// GetHeaderOrDefault returns the value of the header of the given defaultValue if the value is empty.
+func (c *RequestContext) GetHeaderOrDefault(key, defaultValue string) string {
+	value := c.GetHeader(key)
+	if value == "" {
+		return defaultValue
+	}
+	return key
 }
 
 // SetHeader sets to the response the header entries associated with key to
