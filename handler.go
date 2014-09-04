@@ -9,6 +9,9 @@ import (
 // The HandlerFunction type is an adapter to allow the use of ordinary functions as route handlers.
 type HandlerFunction func(*RequestContext) error
 
+// HandlerErrorFunction type is the type used by error interceptors.
+type HandlerErrorFunction func(*RequestContext, error) error
+
 // ServeFileHandler replies to the request with the contents of the named file or directory.
 // For example:
 // p := New()
