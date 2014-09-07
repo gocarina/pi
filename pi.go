@@ -53,7 +53,7 @@ func (p *Pi) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*Route) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		context := newRequestContext(w, r, routeURL)
-		errorInterceptors := func(err error) {
+		errorInterceptors := func(c *RequestContext, err error) {
 			errorsHandled := false
 			for _, parentRoute := range parentRoutes {
 				errorsHandled = errorsHandled || parentRoute.Interceptors.runErrorInterceptors(context, err)
@@ -72,12 +72,12 @@ func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*Rout
 		}
 		for _, parentRoute := range parentRoutes {
 			if err := parentRoute.Interceptors.runBeforeInterceptors(context); err != nil {
-				errorInterceptors(err)
+				errorInterceptors(context, err)
 				return
 			}
 		}
 		if err := handler(context); err != nil {
-			errorInterceptors(err)
+			errorInterceptors(context, err)
 			return
 		}
 		for _, parentRoute := range parentRoutes {

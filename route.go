@@ -22,73 +22,21 @@ func newRoute(RouteURL string, ChildRoutes ...*Route) *Route {
 	}
 }
 
-// interceptorHelper is an helper to add single funcs to the interceptor list.
-type interceptorHelper struct {
-	BeforeFunc HandlerFunction
-	AfterFunc  HandlerFunction
-	ErrorFunc  func(error) HandlerFunction
-}
-
-func (helper *interceptorHelper) Before() HandlerFunction {
-	return helper.BeforeFunc
-}
-
-func (helper *interceptorHelper) After() HandlerFunction {
-	return helper.AfterFunc
-}
-
-func (helper *interceptorHelper) Error(err error) HandlerFunction {
-	return helper.ErrorFunc(err)
-}
-
 // Before registers an interceptor to be called before the request is handled.
-func (r *Route) Before(b beforeInterceptor) *Route {
-	r.Interceptors.addBefore(b)
-	return r
-}
-
-// BeforeFunc add an an Before handler to the interceptor.
-func (r *Route) BeforeFunc(handler HandlerFunction) *Route {
-	helper := &interceptorHelper{
-		BeforeFunc: handler,
-	}
-	r.Interceptors.addBefore(helper)
+func (r *Route) Before(handler HandlerFunction) *Route {
+	r.Interceptors.addBefore(handler)
 	return r
 }
 
 // After registers an interceptor to be called after the request has been handled.
-func (r *Route) After(a afterInterceptor) *Route {
-	r.Interceptors.addAfter(a)
-	return r
-}
-
-// AfterFunc add an an After interceptor.
-func (r *Route) AfterFunc(handler HandlerFunction) *Route {
-	helper := &interceptorHelper{
-		AfterFunc: handler,
-	}
-	r.Interceptors.addAfter(helper)
+func (r *Route) After(handler HandlerFunction) *Route {
+	r.Interceptors.addAfter(handler)
 	return r
 }
 
 // Error registers an interceptor to be called when an error occurs in the request handler or in any Before interceptor.
-func (r *Route) Error(e errorInterceptor) *Route {
-	r.Interceptors.addError(e)
-	return r
-}
-
-// ErrorFunc add an an Error interceptor.
-func (r *Route) ErrorFunc(handler func (error) HandlerFunction) *Route {
-	helper := &interceptorHelper{
-		ErrorFunc: handler,
-	}
-	r.Interceptors.addError(helper)
-	return r
-}
-
-// Intercept registers an interceptor to be called before, after or on error.
-func (r *Route) Intercept(ci interface{}) *Route {
-	r.Interceptors.addInterceptor(ci)
+func (r *Route) Error(handler HandlerErrorFunction) *Route {
+	r.Interceptors.addError(handler)
 	return r
 }
 
