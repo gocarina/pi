@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
+	"github.com/gocarina/formdata"
+	"github.com/gorilla/schema"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -11,7 +13,8 @@ import (
 )
 
 var (
-	errNoFiles = fmt.Errorf("no files")
+	decoderFormValues = schema.NewDecoder()
+	errNoFiles        = fmt.Errorf("no files")
 )
 
 // J is an helper to write JSON.
@@ -145,6 +148,21 @@ func (c *RequestContext) GetXMLObject(object interface{}) error {
 		return err
 	}
 	return xml.Unmarshal(rawBody, &object)
+}
+
+// GetFormObject call gorilla/schema.Decode to maps the form values of the request into the object.
+// For more informations: http://www.gorillatoolkit.org/pkg/schema
+func (c *RequestContext) GetFormObject(object interface{}) error {
+	if err := c.R.ParseForm(); err != nil {
+		return err
+	}
+	return decoderFormValues.Decode(object, c.R.PostForm)
+}
+
+// GetMultipartObject calls gocarina/formdata.Unmarshal to maps the multipart form values of the request into the object.
+// It supports files through multipart.FileHeader.
+func (c *RequestContext) GetMultipartObject(object interface{}) error {
+	return formdata.Unmarshal(c.R, object)
 }
 
 // GetRouteExtraPath returns the extra path.
