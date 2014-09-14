@@ -23,20 +23,26 @@ func newRoute(RouteURL string, ChildRoutes ...*Route) *Route {
 }
 
 // Before registers an interceptor to be called before the request is handled.
-func (r *Route) Before(handler HandlerFunction) *Route {
-	r.Interceptors.addBefore(handler)
+func (r *Route) Before(handlers ...HandlerFunction) *Route {
+	for _, handler := range handlers {
+		r.Interceptors.addBefore(handler)
+	}
 	return r
 }
 
 // After registers an interceptor to be called after the request has been handled.
-func (r *Route) After(handler HandlerFunction) *Route {
-	r.Interceptors.addAfter(handler)
+func (r *Route) After(handlers ...HandlerFunction) *Route {
+	for _, handler := range handlers {
+		r.Interceptors.addAfter(handler)
+	}
 	return r
 }
 
 // Error registers an interceptor to be called when an error occurs in the request handler or in any Before interceptor.
-func (r *Route) Error(handler HandlerErrorFunction) *Route {
-	r.Interceptors.addError(handler)
+func (r *Route) Error(handlers ...HandlerErrorFunction) *Route {
+	for _, handler := range handlers {
+		r.Interceptors.addError(handler)
+	}
 	return r
 }
 

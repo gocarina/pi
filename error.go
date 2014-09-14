@@ -2,6 +2,7 @@ package pi
 
 import (
 	"fmt"
+	"strconv"
 )
 
 // HTTPError represents a HTTP Error.
@@ -18,7 +19,7 @@ type _JSONError struct {
 }
 
 func (error _JSONError) Error() string {
-	return fmt.Sprintf(error.template, int(error.statusCode), error.err)
+	return fmt.Sprintf(error.template, int(error.statusCode), strconv.Quote(error.err))
 }
 
 func (error _JSONError) StatusCode() int {
@@ -52,7 +53,7 @@ func NewError(statusCode int, err error) HTTPError {
 	return _JSONError{
 		statusCode: statusCode,
 		err:        err.Error(),
-		template:   `{"errorCode": %d, "errorMessage": "%s"}`,
+		template:   `{"errorCode": %d, "errorMessage": %s}`,
 	}
 }
 
