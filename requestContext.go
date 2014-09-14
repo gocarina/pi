@@ -14,7 +14,28 @@ import (
 
 var (
 	decoderFormValues = schema.NewDecoder()
-	errNoFiles        = fmt.Errorf("no files")
+
+	// ErrNoFiles is the error when no files is present in the value provided when
+	// calling RequestContext.GetFileHeaders.
+	ErrNoFiles = fmt.Errorf("no files")
+
+	// ErrContentTypeNotSupported is the error when the format of the Content-Type is not supported
+	ErrContentTypeNotSupported = fmt.Errorf("format not supported")
+
+	// ContentTypeJSON is the default MIME for JSON data.
+	ContentTypeJSON = "application/json"
+
+	// ContentTypeXML is the default MIME for XML data.
+	ContentTypeXML = "application/xml"
+
+	// ContentTypeClassicForm is the default MIME for Form Encoded data.
+	ContentTypeClassicForm = "application/x-www-form-urlencoded"
+
+	// ContentTypeMultipart is the default MIME for Webform.
+	ContentTypeMultipart = "multipart/form-data"
+
+	// ContentTypeText is the default MIME for Textual data.
+	ContentTypeText = "text/plain"
 )
 
 // J is an helper to write JSON.
@@ -92,6 +113,31 @@ func (c *RequestContext) WriteXML(object interface{}) error {
 	return nil
 }
 
+// WriteDefault writes the object to the caller according to the acceptable MIME in the Accept header value.
+// If the MIME is not supported, it sends a 406 Not Acceptable request.
+// text/plain uses the String method to be serialized.
+// Mime supported for write:
+//
+//		application/json
+//		application/xml
+//		text/plain
+//
+// If no Accept header is present, it writes the object as JSON.
+func (c *RequestContext) WriteDefault(object interface{}) error {
+	acceptedContentType := c.GetAccepts()
+	for _, contentType := range acceptedContentType {
+		switch contentType {
+		case ContentTypeText:
+			return c.WriteString(fmt.Sprintf("%v", object))
+		case ContentTypeJSON, "*/*":
+			return c.WriteJSON(object)
+		case ContentTypeXML:
+			return c.WriteXML(object)
+		}
+	}
+	return NewError(406, ErrContentTypeNotSupported)
+}
+
 // WriteReader copy the reader to the ResponseWriter.
 func (c *RequestContext) WriteReader(reader io.Reader) error {
 	_, err := io.Copy(c.W, reader)
@@ -163,6 +209,27 @@ func (c *RequestContext) GetFormObject(object interface{}) error {
 // It supports files through multipart.FileHeader.
 func (c *RequestContext) GetMultipartObject(object interface{}) error {
 	return formdata.Unmarshal(c.R, object)
+}
+
+// GetDefaultObject calls one of a GetX method according to the Content-Type of the request.
+// Content-Types supported:
+// 		application/json
+//		application/xml
+//		application/x-www-form-urlencoded
+//		multipart/form-data
+//
+func (c *RequestContext) GetDefaultObject(object interface{}) error {
+	switch c.GetContentType() {
+	case ContentTypeJSON:
+		return c.GetJSONObject(object)
+	case ContentTypeXML:
+		return c.GetXMLObject(object)
+	case ContentTypeClassicForm:
+		return c.GetFormObject(object)
+	case ContentTypeMultipart:
+		return c.GetMultipartObject(object)
+	}
+	return ErrContentTypeNotSupported
 }
 
 // GetRouteExtraPath returns the extra path.
@@ -240,12 +307,22 @@ func (c *RequestContext) GetFileHeaders(key string) ([]*multipart.FileHeader, er
 	if debugMode {
 		writeDebug("GetFileHeaders", c.R.RemoteAddr, fmt.Sprintf("got 0 files from key %s", key))
 	}
-	return nil, errNoFiles
+	return nil, ErrNoFiles
 }
 
 // GetHeader returns the first value of the header of the request associated with the given key.
 func (c *RequestContext) GetHeader(key string) string {
 	return c.R.Header.Get(key)
+}
+
+// GetContentType returns the Content-Type of the request.
+func (c *RequestContext) GetContentType() string {
+	return c.GetHeader("Content-Type")
+}
+
+// GetAccepts returns the MIME types acceptable by the caller.
+func (c *RequestContext) GetAccepts() []string {
+	return c.GetHeaders("Accept")
 }
 
 // GetHeaderOrDefault returns the value of the header of the given defaultValue if the value is empty.
