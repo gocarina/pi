@@ -27,7 +27,6 @@ func TestPi(t *testing.T) {
 		).Get(userHandler),
 	).Get(rootHandler)
 
-
 	if router.ChildRoutes[0].RouteURL != "/user" {
 		t.Fatal("Router SubRouting failed")
 	}
