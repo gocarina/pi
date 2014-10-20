@@ -146,8 +146,11 @@ func (c *RequestContext) WriteReader(reader io.Reader) error {
 }
 
 // WriteTemplate writes the given template to the ResponseWriter.
-func (c *RequestContext) WriteTemplate(name string, data interface{}) error {
-	tmplate := template.New(name)
+func (c *RequestContext) WriteTemplateFile(filename string, data interface{}) error {
+	tmplate, err := template.ParseFiles(filename)
+	if err != nil {
+		return err
+	}
 	return tmplate.Execute(c.W, data)
 }
 
