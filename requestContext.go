@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
+	"html/template"
 )
 
 var (
@@ -142,6 +143,12 @@ func (c *RequestContext) WriteDefault(object interface{}) error {
 func (c *RequestContext) WriteReader(reader io.Reader) error {
 	_, err := io.Copy(c.W, reader)
 	return err
+}
+
+// WriteTemplate writes the given template to the ResponseWriter.
+func (c *RequestContext) WriteTemplate(name string, data interface{}) error {
+	tmplate := template.New(name)
+	return tmplate.Execute(c.W, data)
 }
 
 // SetStatusCode sets the response status code.
