@@ -6,11 +6,12 @@ import (
 	"fmt"
 	"github.com/gocarina/formdata"
 	"github.com/gorilla/schema"
+	"html/template"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
-	"html/template"
+	"strings"
 )
 
 var (
@@ -236,7 +237,8 @@ func (c *RequestContext) GetDefaultObject(object interface{}) error {
 		return c.GetXMLObject(object)
 	case ContentTypeClassicForm:
 		return c.GetFormObject(object)
-	case ContentTypeMultipart:
+	}
+	if strings.SplitAfter(c.GetContentType(), ContentTypeMultipart)[0] == ContentTypeMultipart {
 		return c.GetMultipartObject(object)
 	}
 	return ErrContentTypeNotSupported
