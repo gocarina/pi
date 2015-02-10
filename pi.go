@@ -37,11 +37,16 @@ func (p *Pi) Route(routeURL string, childRoutes ...*Route) *Route {
 // ListenAndServe listens on the TCP network address srv.Addr and then calls
 // Serve to handle requests on incoming connections. If srv.Addr is blank, ":http" is used.
 func (p *Pi) ListenAndServe(addr string) error {
+	p.Construct()
+	return http.ListenAndServe(addr, p)
+}
+
+// Construct the path of the routes.
+func (p *Pi) Construct() {
 	sort.Sort(p.routes)
 	for _, route := range p.routes {
 		p.constructPath(route)
 	}
-	return http.ListenAndServe(addr, p)
 }
 
 // ServeHTTP serves a route in the HTTP server.
