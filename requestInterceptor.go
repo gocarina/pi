@@ -7,9 +7,10 @@ import (
 
 // interceptors gathers Before, After and Error interceptors.
 type interceptors struct {
-	Before []HandlerFunction
-	After  []HandlerFunction
-	Error  []HandlerErrorFunction
+	Before     []HandlerFunction
+	After      []HandlerFunction
+	AfterAsync []HandlerFunction
+	Error      []HandlerErrorFunction
 }
 
 // addBefore appends a Before interceptor.
@@ -20,6 +21,11 @@ func (i *interceptors) addBefore(handler HandlerFunction) {
 // addAfter appends an After interceptor.
 func (i *interceptors) addAfter(handler HandlerFunction) {
 	i.After = append(i.After, handler)
+}
+
+// addAfterAsync appends an AfterAsync interceptor.
+func (i *interceptors) addAfterAsync(handler HandlerFunction) {
+	i.AfterAsync = append(i.AfterAsync, handler)
 }
 
 // addError appends an Error interceptor.
@@ -45,6 +51,13 @@ func (i *interceptors) runAfterInterceptors(c *RequestContext) error {
 		}
 	}
 	return nil
+}
+
+// runAfterAsyncInterceptors runs all the AfterAsync interceptors, ignoring every errors.
+func (i *interceptors) runAfterAsyncInterceptors(c *RequestContext) {
+	for _, as := range i.AfterAsync {
+		go as(c)
+	}
 }
 
 // runAfterInterceptors runs all the Error interceptors, ignoring if an error is thrown.

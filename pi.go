@@ -86,6 +86,7 @@ func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*Rout
 			return
 		}
 		for _, parentRoute := range parentRoutes {
+			parentRoute.Interceptors.runAfterAsyncInterceptors(context)
 			if err := parentRoute.Interceptors.runAfterInterceptors(context); err != nil {
 				fmt.Sprintln(os.Stderr, "after interceptor raised error:", err)
 			}

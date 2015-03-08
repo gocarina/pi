@@ -208,7 +208,7 @@ func (c *RequestContext) GetXMLObject(object interface{}) error {
 }
 
 // GetFormObject call gorilla/schema.Decode to maps the form values of the request into the object.
-// For more informations: http://www.gorillatoolkit.org/pkg/schema
+// For more information: http://www.gorillatoolkit.org/pkg/schema
 func (c *RequestContext) GetFormObject(object interface{}) error {
 	if err := c.R.ParseForm(); err != nil {
 		return err

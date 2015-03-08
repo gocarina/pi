@@ -38,6 +38,14 @@ func (r *Route) After(handlers ...HandlerFunction) *Route {
 	return r
 }
 
+// AfterAsync registers an interceptor to be called asynchronously after the request has been handled.
+func (r *Route) AfterAsync(handlers ...HandlerFunction) *Route {
+	for _, handler := range handlers {
+		r.Interceptors.addAfterAsync(handler)
+	}
+	return r
+}
+
 // Error registers an interceptor to be called when an error occurs in the request handler or in any Before interceptor.
 func (r *Route) Error(handlers ...HandlerErrorFunction) *Route {
 	for _, handler := range handlers {
