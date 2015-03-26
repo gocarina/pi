@@ -61,7 +61,7 @@ func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*Rout
 		errorInterceptors := func(c *RequestContext, err error) {
 			errorsHandled := false
 			for _, parentRoute := range parentRoutes {
-				errorsHandled = errorsHandled || parentRoute.Interceptors.runErrorInterceptors(context, err)
+				errorsHandled = errorsHandled || parentRoute.Interceptors.runErrorInterceptors(context, err) != nil
 			}
 			if !errorsHandled {
 				if piError, ok := err.(HTTPError); ok {

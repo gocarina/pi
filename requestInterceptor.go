@@ -61,11 +61,12 @@ func (i *interceptors) runAfterAsyncInterceptors(c *RequestContext) {
 }
 
 // runAfterInterceptors runs all the Error interceptors, ignoring if an error is thrown.
-func (i *interceptors) runErrorInterceptors(c *RequestContext, err error) bool {
+func (i *interceptors) runErrorInterceptors(c *RequestContext, err error) (returnError error) {
 	for _, e := range i.Error {
 		if err := e(c, err); err != nil {
 			fmt.Sprintln(os.Stderr, "error interceptor raised error:", err)
+			returnError = err
 		}
 	}
-	return len(i.Error) > 0
+	return
 }
