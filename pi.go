@@ -56,7 +56,6 @@ func (p *Pi) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // wrapHandler wraps a route handler to run the interceptors and the handler.
 func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*Route) http.HandlerFunc {
-    parentRoutes = parentRoutes[:len(parentRoutes)-1]
 	return func(w http.ResponseWriter, r *http.Request) {
 		context := newRequestContext(w, r, routeURL)
 		errorInterceptors := func(c *RequestContext, err error) {
