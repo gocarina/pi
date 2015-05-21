@@ -56,11 +56,13 @@ func (p *Pi) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // wrapHandler wraps a route handler to run the interceptors and the handler.
 func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*Route) http.HandlerFunc {
+    closureParentRoutes := make([]*Route, len(parentRoutes))
+    copy(closureParentRoutes, parentRoutes)
 	return func(w http.ResponseWriter, r *http.Request) {
 		context := newRequestContext(w, r, routeURL)
 		errorInterceptors := func(c *RequestContext, err error) {
 			errorsHandled := false
-			for _, parentRoute := range parentRoutes {
+			for _, parentRoute := range closureParentRoutes {
 				errorsHandled = errorsHandled || parentRoute.Interceptors.runErrorInterceptors(context, err) != nil
 			}
 			if !errorsHandled {
@@ -75,7 +77,7 @@ func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*Rout
 				}
 			}
 		}
-		for _, parentRoute := range parentRoutes {
+		for _, parentRoute := range closureParentRoutes {
 			if err := parentRoute.Interceptors.runBeforeInterceptors(context); err != nil {
 				errorInterceptors(context, err)
 				return
@@ -85,7 +87,7 @@ func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*Rout
 			errorInterceptors(context, err)
 			return
 		}
-		for _, parentRoute := range parentRoutes {
+		for _, parentRoute := range closureParentRoutes {
 			parentRoute.Interceptors.runAfterAsyncInterceptors(context)
 			if err := parentRoute.Interceptors.runAfterInterceptors(context); err != nil {
 				fmt.Sprintln(os.Stderr, "after interceptor raised error:", err)
