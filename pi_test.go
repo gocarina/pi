@@ -1,6 +1,7 @@
 package pi
 
 import (
+	"log"
 	"testing"
 )
 
@@ -19,11 +20,37 @@ func userIDHandler(c *RequestContext) error {
 	return nil
 }
 
+func test1(c *RequestContext) error {
+	return c.WriteString("test1")
+}
+
+func test2(c *RequestContext) error {
+	return c.WriteString("test2")
+}
+
+func test3(c *RequestContext) error {
+	return c.WriteString("test3")
+}
+
+func before1(c *RequestContext) error {
+	log.Println("Before1")
+	return nil
+}
+
+func before3(c *RequestContext) error {
+	log.Println("Before3")
+	return nil
+}
+
 func TestPi(t *testing.T) {
 	p := New()
 	router := p.Router("/",
 		p.Route("/user",
-			p.Route("/{id}").Get(userIDHandler).Post(userIDHandler).Put(userIDHandler).Delete(userIDHandler),
+			p.Route("/{id}",
+				p.Route("/test1").Get(test1).Before(before1),
+				p.Route("/test2").Get(test2),
+				p.Route("/test3").Get(test3).Before(before3),
+			).Get(userIDHandler).Post(userIDHandler).Put(userIDHandler).Delete(userIDHandler),
 		).Get(userHandler),
 	).Get(rootHandler)
 
