@@ -10,6 +10,7 @@ type interceptors struct {
 	Before     []HandlerFunction
 	After      []HandlerFunction
 	AfterAsync []HandlerFunction
+	Recoverers []RecovererFunction
 	Error      []HandlerErrorFunction
 }
 
@@ -26,6 +27,11 @@ func (i *interceptors) addAfter(handler HandlerFunction) {
 // addAfterAsync appends an AfterAsync interceptor.
 func (i *interceptors) addAfterAsync(handler HandlerFunction) {
 	i.AfterAsync = append(i.AfterAsync, handler)
+}
+
+// addRecoverer appends a Recoverer interceptor.
+func (i *interceptors) addRecoverer(recoverer RecovererFunction) {
+	i.Recoverers = append(i.Recoverers, recoverer)
 }
 
 // addError appends an Error interceptor.
@@ -57,6 +63,13 @@ func (i *interceptors) runAfterInterceptors(c *RequestContext) error {
 func (i *interceptors) runAfterAsyncInterceptors(c *RequestContext) {
 	for _, as := range i.AfterAsync {
 		go as(c)
+	}
+}
+
+// runRecovererInterceptors runs all the Recoverer interceptors.
+func (i *interceptors) runRecovererInterceptors(c *RequestContext, recoverValue interface{}) {
+	for _, r := range i.Recoverers {
+		r(c, recoverValue)
 	}
 }
 

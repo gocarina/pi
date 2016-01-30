@@ -60,6 +60,13 @@ func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*Rout
     copy(closureParentRoutes, parentRoutes)
 	return func(w http.ResponseWriter, r *http.Request) {
 		context := newRequestContext(w, r, routeURL)
+		defer func() {
+			if recoveredValue := recover(); recoveredValue != nil {
+				for _, parentRoute := range closureParentRoutes {
+					parentRoute.Interceptors.runRecovererInterceptors(context, recoveredValue)
+				}
+			}
+		}()
 		errorInterceptors := func(c *RequestContext, err error) {
 			errorsHandled := false
 			for _, parentRoute := range closureParentRoutes {

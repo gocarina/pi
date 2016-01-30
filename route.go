@@ -46,6 +46,13 @@ func (r *Route) AfterAsync(handlers ...HandlerFunction) *Route {
 	return r
 }
 
+func (r *Route) Recover(recoverers ...RecovererFunction) *Route {
+	for _, rr := range recoverers {
+		r.Interceptors.addRecoverer(rr)
+	}
+	return r
+}
+
 // Error registers an interceptor to be called when an error occurs in the request handler or in any Before interceptor.
 func (r *Route) Error(handlers ...HandlerErrorFunction) *Route {
 	for _, handler := range handlers {

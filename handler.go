@@ -9,6 +9,10 @@ import (
 // The HandlerFunction type is an adapter to allow the use of ordinary functions as route handlers.
 type HandlerFunction func(*RequestContext) error
 
+// RecovererFunction type is a function containing the RequestContext of the request that panicked
+// and the value recovered.
+type RecovererFunction func(*RequestContext, interface{})
+
 // HandlerErrorFunction type is the type used by error interceptors.
 type HandlerErrorFunction func(*RequestContext, error) error
 
