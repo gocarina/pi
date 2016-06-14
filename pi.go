@@ -62,8 +62,15 @@ func wrapHandler(handler HandlerFunction, routeURL string, parentRoutes ...*Rout
 		context := newRequestContext(w, r, routeURL)
 		defer func() {
 			if recoveredValue := recover(); recoveredValue != nil {
+				recovered := false
 				for _, parentRoute := range closureParentRoutes {
+					if len(parentRoute.Interceptors.Recoverers) != 0 {
+						recovered = true
+					}
 					parentRoute.Interceptors.runRecovererInterceptors(context, recoveredValue)
+				}
+				if !recovered {
+					panic(recoveredValue)
 				}
 			}
 		}()

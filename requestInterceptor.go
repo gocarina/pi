@@ -67,10 +67,12 @@ func (i *interceptors) runAfterAsyncInterceptors(c *RequestContext) {
 }
 
 // runRecovererInterceptors runs all the Recoverer interceptors.
-func (i *interceptors) runRecovererInterceptors(c *RequestContext, recoverValue interface{}) {
+func (i *interceptors) runRecovererInterceptors(c *RequestContext, recoverValue interface{}) (recovered bool) {
 	for _, r := range i.Recoverers {
+		recovered = true
 		r(c, recoverValue)
 	}
+	return
 }
 
 // runAfterInterceptors runs all the Error interceptors, ignoring if an error is thrown.
