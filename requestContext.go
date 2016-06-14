@@ -266,6 +266,18 @@ func (c *RequestContext) GetURLParam(param string) string {
 	return c.R.FormValue(param)
 }
 
+// GetURLParams returns multiple URL parameter.
+// For example, given this URL:
+//		/user?c=1&c=2
+//
+//		fmt.Println(c.GetURLParams("c"))
+//		// Outputs [1, 2]
+//
+func (c *RequestContext) GetURLParams(param string) []string {
+	c.R.ParseForm()
+	return c.R.Form[param]
+}
+
 // GetURLParamOrDefault returns an URL parameter or the defaultValue if the value is empty.
 func (c *RequestContext) GetURLParamOrDefault(param, defaultValue string) string {
 	value := c.GetURLParam(param)
