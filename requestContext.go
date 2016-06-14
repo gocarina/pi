@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -285,6 +286,12 @@ func (c *RequestContext) GetURLParamOrDefault(param, defaultValue string) string
 		return defaultValue
 	}
 	return value
+}
+
+// GetURLParamAsInt returns the URL parameter as an int. Ignores error.
+func (c *RequestContext) GetURLParamAsInt(param string) int {
+	v, _ := strconv.Atoi(c.GetURLParam(param))
+	return v
 }
 
 // GetRouteVariable returns a route variable.
