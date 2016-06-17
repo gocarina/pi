@@ -231,7 +231,7 @@ func (c *RequestContext) GetMultipartObject(object interface{}) error {
 //		multipart/form-data
 //
 func (c *RequestContext) GetDefaultObject(object interface{}) error {
-	switch c.GetContentType() {
+	switch strings.Split(c.GetContentType(), ";")[0] {
 	case ContentTypeJSON:
 		return c.GetJSONObject(object)
 	case ContentTypeXML:
